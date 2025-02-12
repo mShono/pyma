@@ -32,6 +32,10 @@ class InInterval:
         self.first_value, self.second_value = value
 
     def __eq__(self, other):
+        if self.first_value is None:
+            return other <= self.second_value
+        if self.second_value is None:
+            return self.first_value <= other
         return self.first_value <= other <= self.second_value
 
     def __repr__(self):
@@ -47,3 +51,32 @@ class IsType:
 
     def __repr__(self):
         return ', '.join(it.__name__ for it in self.types)
+
+
+class AnyOf:
+    """Actual value must match at least one of the expected values."""
+
+    def __init__(self, value):
+        self.value = value
+
+    def __eq__(self, other):
+        return self.value in other
+
+    def __repr__(self):
+        return repr(self.value)
+    
+
+class SimilarList:
+    """List must match the other list no matter the order"""
+
+    def __init__(self, value):
+        self.value = value
+
+    def __eq__(self, other):
+        if len(set(self.value)) == len(set(other)):
+            common_issues = [i for i in self.value if i in other]
+            if len(set(common_issues)) == len(set(other)):
+                return common_issues
+    
+    def __repr__(self):
+        return repr(self.value)

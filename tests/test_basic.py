@@ -1,10 +1,13 @@
 import pytest
-from majava.basic import InInterval, IsType, DictContains
+from majava.basic import InInterval, IsType, DictContains, AnyOf, SimilarList
 
 
 def test_ininterval():
     assert 7 == InInterval(1, 7)
     assert 10 != InInterval(1, 7)
+    assert 7 == InInterval(None, 7)
+    assert 4 == InInterval(None, 7)
+    assert 1 == InInterval(1, None)
 
 
 def test_istype():
@@ -20,6 +23,19 @@ def test_dict__plain_match():
     assert {"a": 1, "b": 2} == DictContains({"a": 1})
     assert {"a": 1, "b": 2} == DictContains({"b": 2})
     assert {"a": 1, "b": 2} == DictContains({})
+
+
+def test_anyof():
+    assert [8, "a", 3.5] == AnyOf(8)
+    assert [8, "a", 3.5] == AnyOf("a")
+    assert [8, "a", 3.5] != AnyOf(4)
+
+
+def test_similarlist():
+    assert [8, "a", 3.5] == SimilarList(["a", 8, 3.5])
+    assert [8, "a", 3.5] == SimilarList([3.5, 8, "a"])
+    assert [8, "a", 3.5] != SimilarList([3.5, 9, "a"])
+    assert [8, "a", 3.5] != SimilarList([3.5, 8, "a", 10])
 
 
 @pytest.mark.parametrize("actual, expected, message", [
